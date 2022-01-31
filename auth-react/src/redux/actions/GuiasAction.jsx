@@ -8,7 +8,7 @@ import {
   setDoc,
   getDoc,
   where,
-  query
+  query,
 } from "@firebase/firestore";
 import { aceptarEliminar } from "./NotificacionesAction";
 
@@ -186,37 +186,59 @@ export const getGuia = (guia) => {
   };
 };
 
-
-let guias = {
-  doc_1: [
+const dataGuias = {
+  guias: [
     {
       id_oficna: "1",
-      fechaCreacion: "02/01/2022",
-      ultimaActualizacion: "20/01/2022",
-      nombreColecion: "oficina_1_1",
-      finalizado: true,
-    }
-  ]
+      fechaCreacion: new Date(),
+      ultimaActualizacion: new Date(),
+      finalizado: false,
+      data: true,
+    },
+  ],
 };
 
 export const guiasHistorial = (guia, id_heka) => {
   return async (dispatch, getState) => {
     try {
       const { id } = getState().user;
-      const numGuia = await getDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`));
-      const numDoc = numGuia.data().num
+      const numGuia = await getDoc(
+        doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`)
+      );
+      const numDoc = numGuia.data().num;
       let nombreDoc;
-      if(numDoc >= 1){
-        nombreDoc = "doc_" + (numDoc + 1)
-        await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {num: numDoc + 1});
-      }else if(numDoc <= 0){
-        nombreDoc = "doc_1"
+      if (numDoc >= 1) {
+        nombreDoc = "doc_" + numDoc;
 
-        await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {num: numDoc + 1});
-      }else{
-        nombreDoc = "doc_" + numDoc
+        dataGuias.guias.push(guia);
+        const document = await getDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`));
+        console.log("documento ", document.data().guias);
+
+        const next = document.data().guias.filter((data) => data.finalizado == true);
+        if (next) {
+          nombreDoc = "doc_" + (numDoc + 1);
+          await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
+            num: numDoc + 1,
+          });
+        }else if(!next){
+
+          const addGuia = document.data()
+          addGuia.guias.push(guia)
+
+          await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`),addGuia);
+        }
+      } else if (numDoc <= 0) {
+        nombreDoc = "doc_1";
+        dataGuias.guias.push(guia);
+        await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
+          num: numDoc + 1,
+        });
+      } else {
+        nombreDoc = "doc_" + numDoc;
+        dataGuias.guias.push(guia);
       }
-      await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`), guia);
+
+      await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`),dataGuias);
       // querySnapshot.forEach((doc) => {
       //   dataNotificaciones.push(doc.data());
       // });
