@@ -26,7 +26,7 @@ export const addNotificacion = () => {
         visible_office: true,
         icon: ["exclamation", "danger"],
         user_id: "vinculo.id_user",
-        office_id: "identificador de una oficina",
+        office_id: "Yw0S25wPutV0qtvmKyGmXabpvGb2",
         mensaje: "Mensaje a mostrar en la notificación",
         href: "id destino",
         fecha: "dd/mm/aaaa",

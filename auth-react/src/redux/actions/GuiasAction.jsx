@@ -186,68 +186,73 @@ export const getGuia = (guia) => {
   };
 };
 
-const dataGuias = {
-  guias: [
-    {
-      id_oficna: "1",
-      fechaCreacion: new Date(),
-      ultimaActualizacion: new Date(),
-      finalizado: false,
-      data: true,
-    },
-  ],
-};
 
 export const guiasHistorial = (guia, id_heka) => {
+  const dataGuias = {
+    guias: [],
+    
+    id_oficna: "1",
+    fechaCreacion: new Date(),
+    ultimaActualizacion: new Date(),
+    finalizado: false,
+    data: true,
+  };
   return async (dispatch, getState) => {
     try {
       const { id } = getState().user;
       const numGuia = await getDoc(
         doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`)
       );
-      const numDoc = numGuia.data().num;
-      let nombreDoc;
+
+      let numDoc = numGuia.exists() ? numGuia.data().num : 0;
+
+      // el nombreDoc sera el nodo al que se enviará {tosend}
+      let nombreDoc, toSend;
+
+      //Definimos la máxima cantidad de guía permitida por documento
+      const maxPermitidas = 5;
+
       if (numDoc >= 1) {
         nombreDoc = "doc_" + numDoc;
-
-        dataGuias.guias.push(guia);
         const document = await getDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`));
-        console.log("documento ", document.data().guias);
 
-        const next = document.data().guias.filter((data) => data.finalizado == true);
+        if(!document.exists) throw new Error("Aparentemente no existe este documento");
+        const addGuia = document.data();
+        console.log(addGuia);
+
+        const next = addGuia.finalizado;
+
+        //Para indicar si ya el paquete consultado está full
         if (next) {
-          nombreDoc = "doc_" + (numDoc + 1);
+          numDoc++;
+          nombreDoc = "doc_" + numDoc;
           await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
-            num: numDoc + 1,
+            num: numDoc,
           });
-        }else if(!next){
-
-          const addGuia = document.data()
-          addGuia.guias.push(guia)
-
-          await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`),addGuia);
+          toSend = await newDoc(numDoc)
+        } else {
+          addGuia.guias.push(guia);
+          toSend = addGuia;
         }
-      } else if (numDoc <= 0) {
-        nombreDoc = "doc_1";
-        dataGuias.guias.push(guia);
-        await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
-          num: numDoc + 1,
-        });
+        
       } else {
-        nombreDoc = "doc_" + numDoc;
-        dataGuias.guias.push(guia);
+        nombreDoc = "doc_1";
+        toSend = await newDoc(1);
       }
 
-      await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`),dataGuias);
-      // querySnapshot.forEach((doc) => {
-      //   dataNotificaciones.push(doc.data());
-      // });
-      // guias.doc_1.push(guia);
-      console.log("guias historial ", numDoc);
-      //await setDoc(doc(dbFirestore, `guiasOficina/${id}`), guias);
-      // await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/doc1`), guia);
-      // dispatch(getAllGuias());
-      // dispatch(aceptarEliminar(id_heka));
+      async function newDoc(num) {
+        dataGuias.guias.push(guia);
+        await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
+          num,
+        });
+
+        return dataGuias;
+      }
+
+      if(toSend.guias.length >= maxPermitidas) {
+        toSend.finalizado = true;
+      }
+      await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`), toSend);
     } catch (error) {
       console.log(`ERROR en GuiasAction: guiasHistorial ${error}`);
     }
