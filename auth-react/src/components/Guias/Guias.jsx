@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
+// import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllGuias } from "../../redux/actions/GuiasAction";
 import "./guias.css";
@@ -11,7 +11,7 @@ const Guias = () => {
   useEffect(() => {
     guias.length <= 0 && (dispatch(getAllGuias()))  
     // for (let i = 0; i < 5; i++) {
-    //   dispatch(addGuia())
+      // dispatch(addGuia(2))
     // }
     // eslint-disable-next-line
   }, [dispatch]);
@@ -60,10 +60,10 @@ const Guias = () => {
       </div>
       {guias.length < 1 ? (
         <div className="mt-5 text-center">
-          <Spinner animation="border" role="status">
+          {/* <Spinner animation="border" role="status">
             <span className="visually-hidden">Loading...</span>
-          </Spinner>
-          <h5>Cargando...</h5>
+          </Spinner> */}
+          <h5>No hay registro de guías</h5>
         </div>
       ) : (
         <div className="text-center mt-2">

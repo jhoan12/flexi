@@ -40,11 +40,13 @@ const TableGuias = ({ guias }) => {
   };
   return (
     <>
-      <div style={{ cursor: "pointer" }}>
+      <div>
         <DataTable
           columns={columns}
           data={guias}
           pagination
+          pointerOnHover
+          highlightOnHover
           onRowClicked={(e) => handleButtonClick(e)}
         />
       </div>

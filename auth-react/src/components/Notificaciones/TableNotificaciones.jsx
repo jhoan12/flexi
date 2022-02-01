@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DataTable from "react-data-table-component";
 import { useDispatch } from 'react-redux';
 import Swal from "sweetalert2";
-import { guiasHistorial } from '../../redux/actions/GuiasAction';
+import { getGuia, guiasHistorial } from '../../redux/actions/GuiasAction';
 function TableNotificaciones({data}) {
     const dispatch = useDispatch()
     const [modalShow, setModalShow] = useState(false);
@@ -14,10 +14,25 @@ function TableNotificaciones({data}) {
       },
       {
         name: "Prioridad",
-        selector: (row) => row.prioridad,
+        selector: definePriorities,
       },
     ];
     
+    function definePriorities({timeline}) {
+      const act = new Date().getTime();
+      const diference = (act - timeline) / (1000 * 60 * 60 * 24);
+      if(diference > 3) {
+        return "Muy Alta"
+      } else if (diference > 2) {
+        return "Alta"
+      } else if (diference > 1) {
+        return "Media"
+      } else {
+        return "Normal"
+      }
+    }
+
+
     const handleButtonClick = (e) => {
       try {
           setDataNotificacion(e);
@@ -33,11 +48,14 @@ function TableNotificaciones({data}) {
             },
             confirmButtonText: 'Aceptar Paquete',
             
-          }).then((result) => {
+          }).then( async (result) => {
             if (result.isConfirmed) {
               console.log(e);
-              const mensaje = {mensaje:"hola maundo"}
-              dispatch(guiasHistorial(mensaje, e.id_heka))
+              const infoGuiaConsultada = await getGuia(e.user_id, e.id_heka)(dispatch);
+              const datos_a_tomar = new Array("numeroGuia", "transportadora", "id_user", "id_heka", "fecha")
+              const guia = new Object();
+              datos_a_tomar.forEach(d => guia[d] = infoGuiaConsultada[d]);
+              dispatch(guiasHistorial(guia, e.id))
             } else if ("pase ", result.isDenied) {
               Swal.fire('Error', '', 'info')
             }
@@ -50,11 +68,13 @@ function TableNotificaciones({data}) {
   
     return (
       <>
-        <div style={{ cursor: "pointer" }}>
+        <div>
           <DataTable
             columns={columns}
             data={data}
             pagination
+            pointerOnHover
+            highlightOnHover
             onRowClicked={(e) => handleButtonClick(e)}
           />
         </div>

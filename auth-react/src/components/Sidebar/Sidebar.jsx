@@ -39,7 +39,7 @@ const Sidebar = () => {
           </Navbar.Brand>
         </Container>
       </Navbar>
-      <Offcanvas show={show} onHide={handleClose} style={{ maxWidth: "17em" }}>
+      <Navbar.Offcanvas show={show} onHide={handleClose} style={{ maxWidth: "17em" }}>
         <Offcanvas.Header className="sidebarHeader border-bottom" closeButton>
           <Offcanvas.Title className="ms-5">PUNTOS</Offcanvas.Title>
         </Offcanvas.Header>
@@ -84,7 +84,7 @@ const Sidebar = () => {
             <FaSignInAlt className="sidebar-item-icon mt-3" /> salir
           </NavLink>
         </Offcanvas.Body>
-      </Offcanvas>
+      </Navbar.Offcanvas>
     </div>
   );
 };
