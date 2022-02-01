@@ -253,6 +253,7 @@ export const guiasHistorial = (guia, id_heka) => {
         toSend.finalizado = true;
       }
       await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`), toSend);
+      dispatch(aceptarEliminar(id_heka))
     } catch (error) {
       console.log(`ERROR en GuiasAction: guiasHistorial ${error}`);
     }

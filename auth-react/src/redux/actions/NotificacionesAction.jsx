@@ -4,6 +4,7 @@ import {
   collection,
   getDocs,
   updateDoc,
+  deleteDoc,
   doc,
   setDoc,
   where,
@@ -78,6 +79,8 @@ export const aceptarEliminar = (id_heka) => {
           notificaciones: dataNotificaciones,
         },
       });
+      await deleteDoc(doc(dbFirestore, `/notificaciones/${id_heka}`));
+      dispatch(getAllNotificaciones())
     } catch (error) {
       console.log(`ERROR en NotificacionAction: aceptarEliminar ${error}`);
     }
