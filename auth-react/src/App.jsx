@@ -39,7 +39,7 @@ function App() {
       {isLoged && isLoged !== null ? <Sidebar /> : null}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route
+        {/* <Route
           path="/"
           exact
           element={
@@ -48,7 +48,7 @@ function App() {
               <Progreso />{" "}
             </Private>
           }
-        />
+        /> */}
         <Route
           path="/historial"
           element={
@@ -57,16 +57,16 @@ function App() {
             </Private>
           }
         />
-        <Route
+        {/* <Route
           path="/devoluciones"
           element={
             <Private>
               <Devoluciones />
             </Private>
           }
-        />
+        /> */}
         <Route
-          path="/notificaciones"
+          path="/"
           element={
             <Private>
               <Notificaciones/>
@@ -81,14 +81,14 @@ function App() {
             </Private>
           }
         />
-        <Route
+        {/* <Route
           path="/pagos"
           element={
             <Private>
               <Pagos />
             </Private>
           }
-        />
+        /> */}
         <Route
           path="/profile"
           element={
