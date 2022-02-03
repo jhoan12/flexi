@@ -10,7 +10,7 @@ import {
   where,
   query,
   collectionGroup,
-  limit, deleteDoc
+  limit, deleteDoc, writeBatch
 } from "@firebase/firestore";
 import { aceptarEliminar } from "./NotificacionesAction";
 
@@ -390,6 +390,7 @@ export const recibirGuia = async (numGuia, office_id) => {
     const actualizar = new Object({
       en_oficina: true
     });
+    guia.en_oficina = true;
     
     let respuesta;
     if(guardada) {
@@ -452,10 +453,3 @@ export const actualizaEstadoGuiaUsuario = (id_heka, user_id, actualizar) => {
 
   updateDoc(docRef, actualizar);
 }
-
-const eraser = async () => {
-  const ref = collection(dbFirestore, "notificaciones");
-  const q = await getDocs(ref);
-  q.forEach(d => deleteDoc(d.ref));
-}
-// eraser()

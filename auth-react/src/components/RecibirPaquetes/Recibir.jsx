@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { actualizarGuia, getAllGuias, guiasHistorial, recibirGuia } from "../../redux/actions/GuiasAction";
+import { actualizaEstadoGuiaUsuario, actualizarGuia, getAllGuias, guiasHistorial, recibirGuia } from "../../redux/actions/GuiasAction";
 import ModalInfo from "./ModalInfo";
 
 const RecibirPaquete = () => {
@@ -48,6 +48,11 @@ const RecibirPaquete = () => {
         
       setnumGuia("");
       setModalShow(true);
+      actualizaEstadoGuiaUsuario(res.id_heka, res.guia.user_id, {
+        estado: "Recibido oficina",
+        seguimiento_finalizado: true
+      });
+      
     } catch (error) {
       console.log(`ERROR en Recibir.jsx en action: ${error}`)
     }
