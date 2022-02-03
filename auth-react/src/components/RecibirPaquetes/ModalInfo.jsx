@@ -8,13 +8,14 @@ const ModalInfo = ({ show, setModalShow, data }) => {
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      onHide={() => setModalShow(false)}
     >
       <Modal.Header closeButton>
           
       </Modal.Header>
       <Modal.Body className="row">
       <Modal.Title id="contained-modal-title-vcenter" className="text-center alert alert-primary" role="alert">
-          ¡Registro de paquete existoso!
+          ¡Estamos registrando el siguiente paquete!
         </Modal.Title>
         <h4 className="text-center">Remitente</h4>
         <p className="col-12 col-sm-6">
