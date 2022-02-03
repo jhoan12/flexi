@@ -36,9 +36,9 @@ const Sidebar = () => {
             <Offcanvas.Title className="ms-5">PUNTOS</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body className="sidebarBody">
-            <NavLink to="/" className="sidebar-item border-bottom mb-3">
+            {/* <NavLink to="/" className="sidebar-item border-bottom mb-3">
               <GiHiking className="sidebar-item-icon" /> Progreso
-            </NavLink>
+            </NavLink> */}
             <NavLink to="/notificaciones" className="sidebar-item border-bottom mb-3">
               <FaBell className="sidebar-item-icon" /> Notificaciones
             </NavLink>
@@ -48,18 +48,18 @@ const Sidebar = () => {
             >
               <FaPeopleCarry className="sidebar-item-icon" /> Recibir Paquete
             </NavLink>
-            <NavLink to="/pagos" className="sidebar-item border-bottom mb-3">
+            {/* <NavLink to="/pagos" className="sidebar-item border-bottom mb-3">
               <FaCoins className="sidebar-item-icon" /> Pagos
-            </NavLink>
+            </NavLink> */}
             <NavLink to="/historial" className="sidebar-item border-bottom mb-3">
               <FaAngellist className="sidebar-item-icon" /> Historial Servicios
             </NavLink>
-            <NavLink
+            {/* <NavLink
               to="/devoluciones"
               className="sidebar-item border-bottom mb-3"
             >
               <FaExchangeAlt className="sidebar-item-icon" /> Devoluciones
-            </NavLink>
+            </NavLink> */}
           </Offcanvas.Body>
           <Offcanvas.Body className="d-flex align-items-end sidebarBody">
             <NavLink
