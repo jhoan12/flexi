@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllGuias } from "../../redux/actions/GuiasAction";
-import Buscador from "./Buscador";
 import "./guias.css";
 import TableGuias from "./TableGuias";
 const Guias = () => {
