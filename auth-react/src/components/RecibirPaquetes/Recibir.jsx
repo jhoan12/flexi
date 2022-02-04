@@ -42,17 +42,18 @@ const RecibirPaquete = () => {
           if(swRes.isConfirmed) {
             dispatch(guiasHistorial(res.guia));
           } else {
-            setGuia(false)
+            setGuia(false);
+            return;
           }
       }
         
       setnumGuia("");
       setModalShow(true);
-      actualizaEstadoGuiaUsuario(res.id_heka, res.guia.user_id, {
+      actualizaEstadoGuiaUsuario(res.id_heka, res.guia.id_user, {
         estado: "Recibido oficina",
         seguimiento_finalizado: true
       });
-      
+
     } catch (error) {
       console.log(`ERROR en Recibir.jsx en action: ${error}`)
     }
@@ -69,19 +70,21 @@ const RecibirPaquete = () => {
       <form onSubmit={action} className="boxCard p-5 my-4">
         <div className="row pe-1">
           <label className="form-label col-12">Numero Guia </label>
-          <div className="col-6">
+          <div className="col-12 col-sm-6">
             <input
               type="number"
               required
-              className=" form-control "
+              className="form-control"
               value={numGuia}
               placeholder="Numero de guia"
               onChange={(e) => setnumGuia(e.target.value)}
             />
           </div>
-          <Button type="submit" className="col-6" variant="dark">
-            Ingresar
-          </Button>
+          <div className="d-grid gap-1 col mt-2 mt-sm-0">
+            <Button type="submit" variant="dark">
+              Ingresar
+            </Button>
+          </div>
         </div>
       </form>
 

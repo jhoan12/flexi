@@ -4,28 +4,44 @@ import Swal from "sweetalert2";
 import ModalInfoHistorial from "./ModalInfoHistorial";
 import { dbFirestore } from "../../firebase";
 import { doc, getDoc } from "@firebase/firestore";
+import { Button } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { actualizarGuia } from "../../redux/actions/GuiasAction";
+import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
 const TableGuias = ({ guias }) => {
+  const dispatch = useDispatch();
   const [modalShow, setModalShow] = useState(false);
   const [dataGuia, setDataGuia] = useState({});
+
   const columns = [
     {
-      name: "Fecha",
-      selector: (row) => row.fecha,
-      sortable: true,
-    },
-    {
-      name: "Transportadora",
-      selector: (row) => row.transportadora,
-      sortable: true,
-    },
-    {
-      name: "ID Heka",
+      name: "ID",
       selector: (row) => row.id_heka,
+      sortable: true,
     },
     {
       name: "Guia",
       selector: (row) => row.numeroGuia,
+      sortable: true
     },
+    {
+      name: "Fecha",
+      selector: (row) => row.fecha,
+    },
+    {
+      name: "Transportadora",
+      selector: (row) => row.transportadora,
+    },
+    {
+      name: "Acción",
+      selector: (row) => {
+        if(!row.recibidoEnPunto) return "";
+        if(row.entregada) return "Entregada";
+        return <Button onClick={() => handleEntregarClick(row)}>Entregar</Button>
+      },
+      button: true,
+      omit: true   
+    }
   ];
 
   useEffect(() => {
@@ -48,6 +64,23 @@ const TableGuias = ({ guias }) => {
       console.log(`ERROR en TableGuias.jsx en handleButtonClick: ${error} `);
     }
   };
+
+  const handleEntregarClick = async (row) => {
+    Swal.fire({
+      title: "Entregando guía",
+      text: "Estás entregando la guía " + row.numeroGuia + ". ¿Deseas cotinuar?",
+      showCancelButton: true,
+      confirmButtonText: "Si, continuar"
+    }).then(res => {
+      if(res.isConfirmed) {
+        const actualizar = tipoActualizacionEstado.entregar;
+    
+        dispatch(actualizarGuia(actualizar, row.id_heka, row.parent_id));
+      }
+    });
+
+  }
+
   return (
     <>
       <div>

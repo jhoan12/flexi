@@ -9,7 +9,7 @@ const Notificaciones = () => {
   const {notificaciones} = useSelector((state) => state.notificaciones)
   useEffect(() => {
     console.log("entre");
-    // dispatch(addNotificacion(2))
+    // addNotificacion(1)();
     notificaciones.length <= 0 && (dispatch(getAllNotificaciones()))
     console.log("finalice");
   }, []);
