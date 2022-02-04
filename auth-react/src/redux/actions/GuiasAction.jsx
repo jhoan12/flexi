@@ -13,10 +13,10 @@ import {
   limit, deleteDoc, writeBatch
 } from "@firebase/firestore";
 import { aceptarEliminar } from "./NotificacionesAction";
-
-// const random = () => {
-//   return Math.floor(Math.random() * (90000 - 10000 + 1) + 10000);
-// };
+import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
+const random = () => {
+  return Math.floor(Math.random() * (90000 - 10000 + 1) + 10000);
+};
 
 export const addGuia = (id_heka) => {
   return async () => {
@@ -244,18 +244,20 @@ export const guiasHistorial = (guia, id_notification) => {
           await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
             num: numDoc,
           });
-          toSend = await newDoc(numDoc)
+          toSend = await newDoc(numDoc, nombreDoc)
         } else {
+          acceptedObject.parent_id = nombreDoc;
           addGuia.guias.push(acceptedObject);
           toSend = addGuia;
         }
         
       } else {
         nombreDoc = "doc_1";
-        toSend = await newDoc(1);
+        toSend = await newDoc(1, nombreDoc);
       }
 
-      async function newDoc(num) {
+      async function newDoc(num, nombreDoc) {
+        acceptedObject.parent_id = nombreDoc;
         dataGuias.guias.push(acceptedObject);
         await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
           num,
@@ -324,7 +326,8 @@ export const findGuiaExterna = async (numGuia) => {
     const docRef = query(
       collectionGroup(dbFirestore, "guias"), 
       limit(1),
-      // where(...args)
+      // where(...args),
+      // where("oficina", "==", true)
     );
 
     const q = await getDocs(docRef);
@@ -383,10 +386,8 @@ export const recibirGuia = async (numGuia, office_id) => {
     // Luego buscamos si el punto ya tiene guardada la guía
     const guardada = await buscarPorIdHeka(office_id, id_heka);
     const guia = guiaEncontrada.data();
-    const actualizar = new Object({
-      en_oficina: true
-    });
-    guia.en_oficina = true;
+    const actualizar = tipoActualizacionEstado.recibir;
+    guia.recibidoEnPunto = actualizar.recibidoEnPunto;
     
     let respuesta;
     if(guardada) {
@@ -394,7 +395,7 @@ export const recibirGuia = async (numGuia, office_id) => {
       // se envía un objeto para actualizarla      
       const ids = guardada.data().guias;
       
-      if(ids && ids.some(g => g.en_oficina && g.id_heka === id_heka)) {
+      if(ids && ids.some(g => g.recibidoEnPunto && g.id_heka === id_heka)) {
         // Si ya la guía está registrada y recibida correctamente, se envía un mensaje notificando el caso
         respuesta = new Object({
           type: "error",

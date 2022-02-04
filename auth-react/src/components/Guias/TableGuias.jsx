@@ -4,13 +4,16 @@ import Swal from "sweetalert2";
 import ModalInfoHistorial from "./ModalInfoHistorial";
 import { dbFirestore } from "../../firebase";
 import { doc, getDoc } from "@firebase/firestore";
-import { FaSearch } from "react-icons/fa";
 
-import Buscador from "./Buscador";
 import { Form } from "react-bootstrap";
 
 
+import { Button } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { actualizarGuia } from "../../redux/actions/GuiasAction";
+import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
 const TableGuias = ({ guias }) => {
+  const dispatch = useDispatch();
   const [modalShow, setModalShow] = useState(false);
   const [dataGuia, setDataGuia] = useState({});
   const [data, setData] = useState([]);
@@ -22,22 +25,33 @@ const TableGuias = ({ guias }) => {
 
   const columns = [
     {
+      name: "ID",
+      selector: (row) => row.id_heka,
+      sortable: true,
+    },
+    {
+      name: "Guia",
+      selector: (row) => row.numeroGuia,
+      sortable: true
+    },
+    {
       name: "Fecha",
       selector: (row) => row.fecha,
     },
     {
       name: "Transportadora",
       selector: (row) => row.transportadora,
-      sortable: true,
     },
     {
-      name: "ID Heka",
-      selector: (row) => row.id_heka,
-    },
-    {
-      name: "Guia",
-      selector: (row) => row.numeroGuia,
-    },
+      name: "Acción",
+      selector: (row) => {
+        if(!row.recibidoEnPunto) return "";
+        if(row.entregada) return "Entregada";
+        return <Button onClick={() => handleEntregarClick(row)}>Entregar</Button>
+      },
+      button: true,
+      omit: true   
+    }
   ];
 
   const handleButtonClick = async (e) => {
@@ -77,58 +91,29 @@ const TableGuias = ({ guias }) => {
       console.log(`ERROR TableGuias buscar: ${error}`);
     }
   }
+  
+  const handleEntregarClick = async (row) => {
+    Swal.fire({
+      title: "Entregando guía",
+      text: "Estás entregando la guía " + row.numeroGuia + ". ¿Deseas cotinuar?",
+      showCancelButton: true,
+      confirmButtonText: "Si, continuar"
+    }).then(res => {
+      if(res.isConfirmed) {
+        const actualizar = tipoActualizacionEstado.entregar;
+    
+        dispatch(actualizarGuia(actualizar, row.id_heka, row.parent_id));
+      }
+    });
+
+  }
 
   return (
     <div className="row">
     <div className="col-12 d-flex justify-content-center">
-      {/* <div className="col-sm-7"> */}
-        {/* <Form>
-          {["radio"].map((type) => (
-            <div key={`inline-${type}`} className="mb-3">
-                <Form.Check
-                inline
-                label="Fecha"
-                // onChange={() => setFiltrarPor("fecha")}
-                name="group1"
-                type={type}
-                id={`inline-${type}-1`}
-              />
-              <Form.Check
-                inline
-                label="Transportadora"
-                name="group1"
-                // onChange={() => setFiltrarPor("transportadora")}
-                type={type}
-                id={`inline-${type}-2`}
-              />
-              <Form.Check
-                inline
-                label="Id-Heka"
-                name="group1"
-                // onChange={() => setFiltrarPor("id_heka")}
-                type={type}
-                id={`inline-${type}-3`}
-              />
-              <Form.Check
-                inline
-                name="group1"
-                label="Guia"
-                // onChange={() => setFiltrarPor("numeroGuia")}
-                type={type}
-                id={`inline-${type}-4`}
-              />
-              <Form.Check
-                inline
-                name="group1"
-                label="todas"
-                // onChange={() => dispatch(getAllGuias())}
-                type={type}
-                id={`inline-${type}-4`}
-              />
-            </div>
-          ))}
-        </Form> */}
-      {/* </div> */}
+     
+       
+     
       {/* <div className="col-11 my-3 buscador ">
       <input 
         type="text" 
@@ -138,16 +123,6 @@ const TableGuias = ({ guias }) => {
       </div> */}
       <Form.Control type="text" className="m-3" placeholder="Search.." onChange={(e) => buscar(e.target.value)}/>
       
-      {/* <form className="col-11 my-3 buscador ">
-        <input 
-        type="text" 
-        placeholder="Search.."
-        onChange={(e) => buscar(e.target.value)}
-        /> */}
-        {/* <button type="submit" className="buscador-icono">
-          <FaSearch />
-        </button> */}
-        {/* </form> */}
     </div>
       <div>
 
@@ -169,7 +144,9 @@ const TableGuias = ({ guias }) => {
         />
       )}
     </div>
+
   );
 };
+
 
 export default TableGuias;
