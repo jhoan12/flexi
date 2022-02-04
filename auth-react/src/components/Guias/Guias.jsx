@@ -23,6 +23,7 @@ const Guias = () => {
     try {
       if (filter === "Proceso") {
         const newArray = guias.filter((guia) => !guia.recibidoEnPunto);
+        console.log(newArray);
         setData(newArray);
       } else if (filter === "Punto") {
         const newArray = guias.filter((guia) => guia.recibidoEnPunto);
@@ -40,24 +41,30 @@ const Guias = () => {
     <div className="container">
        <h2 className="text-center">Guías</h2>
       
-      <div className="row mt-4">
+      <div className="row mt-4 d-flex justify-content-center">
         <div
           onClick={() => filtrar("Historial")}
-          className="col-4 text-center border historialPendientes"
+          className="col-5 col-sm-4 col-lg-3 text-center border historialPendientes"
         >
-          <h3>Historial</h3>
+          <h3>Todas</h3>
         </div>
         <div
           onClick={() => filtrar("Proceso")}
-          className="col-4 text-center border historialPendientes"
+          className="col-5 col-sm-4 col-lg-3 text-center border historialPendientes"
         >
           <h3>Proceso</h3>
         </div>
         <div
-          onClick={() => filtrar("Punto")}
-          className="col-4 text-center border historialPendientes"
+          onClick={() => filtrar("Recibidos")}
+          className="col-5 col-sm-4 col-lg-3 text-center border historialPendientes"
         >
-          <h3>Punto</h3>
+          <h3>Recibidos</h3>
+        </div>
+        <div
+          onClick={() => filtrar("Entregados")}
+          className="col-5 col-sm-4 col-lg-3 text-center border historialPendientes"
+        >
+          <h3>Entregados</h3>
         </div>
       </div>
       {guias.length < 1 ? (
