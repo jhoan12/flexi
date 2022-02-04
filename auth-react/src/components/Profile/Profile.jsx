@@ -8,12 +8,8 @@ const Profile = () => {
   const user = useSelector((state) => state.user);
   const [show, setShow] = useState(false);
 
-
   const handleShow = () => setShow(true);
   const closeShow = () => setShow(false);
-
-
-
   return (
     <div className="container">
       <div className="card p-2 my-5 boxCard">
@@ -78,12 +74,7 @@ const Profile = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-12 col-md-6 mb-4 d-grid gap-2">
-            <Button variant="dark" className="btn-lg btn-bloc">
-              Eliminar Cuenta
-            </Button>
-          </div>
-          <div className="col-12 col-md-6 mb-4 d-grid gap-2">
+          <div className="col-12  mb-4 d-grid gap-2">
             <Button 
             variant="dark" 
             className="btn-lg btn-bloc"

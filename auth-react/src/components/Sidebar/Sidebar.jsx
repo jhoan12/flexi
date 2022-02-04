@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import { Container, Navbar, Offcanvas } from "react-bootstrap";
 import {
   FaAngellist,
-  FaBars,
+  // FaBars,
   FaUserCircle,
   FaSignInAlt,
   FaPeopleCarry,
-  FaExchangeAlt,
-  FaCoins,
+  // FaExchangeAlt,
+  // FaCoins,
   FaBell
 } from "react-icons/fa";
-import { GiHiking } from "react-icons/gi";
+// import { GiHiking } from "react-icons/gi";
 import "./sidebar.css";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../redux/actions/UserAction";
@@ -39,7 +39,7 @@ const Sidebar = () => {
             {/* <NavLink to="/" className="sidebar-item border-bottom mb-3">
               <GiHiking className="sidebar-item-icon" /> Progreso
             </NavLink> */}
-            <NavLink to="/notificaciones" className="sidebar-item border-bottom mb-3">
+            <NavLink to="/" className="sidebar-item border-bottom mb-3">
               <FaBell className="sidebar-item-icon" /> Notificaciones
             </NavLink>
             <NavLink

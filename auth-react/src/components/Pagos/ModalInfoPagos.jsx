@@ -1,9 +1,7 @@
 import React from "react";
-import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 
 const ModalInfoPagos = ({ show, setModalShow, data }) => {
-  const [stateDebe, setStateDebe] = useState(data.debe);
   return (
     <Modal
       show={show}

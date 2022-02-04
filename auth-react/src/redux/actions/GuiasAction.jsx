@@ -12,9 +12,9 @@ import {
 } from "@firebase/firestore";
 import { aceptarEliminar } from "./NotificacionesAction";
 
-const random = () => {
-  return Math.floor(Math.random() * (90000 - 10000 + 1) + 10000);
-};
+// const random = () => {
+//   return Math.floor(Math.random() * (90000 - 10000 + 1) + 10000);
+// };
 
 export const addGuia = (id_heka) => {
   return async () => {
@@ -79,7 +79,6 @@ export const addGuia = (id_heka) => {
         type: "PAGO CONTRAENTREGA",
         id_heka,
       };
-      const idHeka = parseInt(id_heka);
       await setDoc(doc(dbFirestore, `usuarios/id_user/guias/${id_heka}`), data);
       console.log("cree 1");
     } catch (error) {
@@ -92,19 +91,15 @@ export const getAllGuias = () => {
   return async (dispatch, getState) => {
     try {
       let dataGuias = [];
-      console.log(getState());
       const {id} = getState().user;
       const q = query(
         collection(dbFirestore, "users", id, "guiasOficina"),
         where("visible", "==", true)
       );
-
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         dataGuias = dataGuias.concat(doc.data().guias);
       });
-
-      console.log(dataGuias);
       dispatch({
         type: types.getAllGuias,
         payload: {
@@ -269,6 +264,21 @@ export const guiasHistorial = (guia, id_notification) => {
     }
   };
 };
+
+export const buscador = (guias) => {
+  return async (dispatch) => {
+    try {
+      dispatch({
+        type: types.getAllGuias,
+        payload: {
+          guias: guias,
+        },
+      });
+    } catch (error) {
+      console.log(`ERROR en GuiasAction: recibirGuia ${error}`);
+    }
+  }
+}
 
 export const recibirGuia = (guia) => {
   return async (dispatch) => {

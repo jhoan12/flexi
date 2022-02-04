@@ -3,7 +3,6 @@ import { dbFirestore } from "../../firebase";
 import {
   collection,
   getDocs,
-  updateDoc,
   deleteDoc,
   doc,
   setDoc,
