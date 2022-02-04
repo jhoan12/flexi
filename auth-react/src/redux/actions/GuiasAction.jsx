@@ -9,6 +9,8 @@ import {
   getDoc,
   where,
   query,
+  collectionGroup,
+  limit, deleteDoc, writeBatch
 } from "@firebase/firestore";
 import { aceptarEliminar } from "./NotificacionesAction";
 
@@ -92,12 +94,15 @@ export const getAllGuias = () => {
     try {
       let dataGuias = [];
       const {id} = getState().user;
+      if(!id) return;
+      
       const q = query(
         collection(dbFirestore, "users", id, "guiasOficina"),
         where("visible", "==", true)
       );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
+        console.log(doc.data())
         dataGuias = dataGuias.concat(doc.data().guias);
       });
       dispatch({
@@ -192,19 +197,24 @@ export const getGuia = (id_user, guia) => {
 };
 
 export const guiasHistorial = (guia, id_notification) => {
-  const dataGuias = {
-    guias: [],
-    
-    id_oficna: "1",
-    fechaCreacion: new Date(),
-    ultimaActualizacion: new Date(),
-    finalizado: false,
-    data: true,
-    visible: true,
-  };
+  const acceptedObject = new Object();
+  const acceptedValues = new Array("numeroGuia", "transportadora", "id_user", "id_heka", "fecha");
+  acceptedValues.forEach(d => acceptedObject[d] = guia[d]);
+
   return async (dispatch, getState) => {
     try {
       const { id } = getState().user;
+      const dataGuias = {
+        guias: [],
+        ids_heka: [],
+        numeroGuias: [],
+        id_oficina: id,
+        fechaCreacion: new Date(),
+        ultimaActualizacion: new Date(),
+        finalizado: false,
+        visible: true,
+      };
+
       const numGuia = await getDoc(
         doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`)
       );
@@ -236,7 +246,7 @@ export const guiasHistorial = (guia, id_notification) => {
           });
           toSend = await newDoc(numDoc)
         } else {
-          addGuia.guias.push(guia);
+          addGuia.guias.push(acceptedObject);
           toSend = addGuia;
         }
         
@@ -246,7 +256,7 @@ export const guiasHistorial = (guia, id_notification) => {
       }
 
       async function newDoc(num) {
-        dataGuias.guias.push(guia);
+        dataGuias.guias.push(acceptedObject);
         await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
           num,
         });
@@ -257,39 +267,185 @@ export const guiasHistorial = (guia, id_notification) => {
       if(toSend.guias.length >= maxPermitidas) {
         toSend.finalizado = true;
       }
+
+      const guias = toSend.guias;
+      toSend.ids_heka = guias.map(guia => guia.id_heka);
+      toSend.numeroGuias = guias.map(guia => guia.numeroGuia);
       await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`), toSend);
-      dispatch(aceptarEliminar(id_notification));
+      if(id_notification) dispatch(aceptarEliminar(id_notification));
     } catch (error) {
       console.log(`ERROR en GuiasAction: guiasHistorial ${error}`);
     }
   };
 };
 
-export const buscador = (guias) => {
-  return async (dispatch) => {
+export const actualizarGuia = (replacer, id_heka, id_doc, replace) => {
+  return async (dispatch, getState) => {
     try {
-      dispatch({
-        type: types.getAllGuias,
-        payload: {
-          guias: guias,
-        },
-      });
-    } catch (error) {
-      console.log(`ERROR en GuiasAction: recibirGuia ${error}`);
+      const id_office = getState().user.id;
+      const docRef = doc(dbFirestore, "users", id_office, "guiasOficina", id_doc);
+      const documento = await getDoc(docRef);
+
+      if(!documento.exists()) throw new Error("No exite el documento solicitado");
+
+      const guias = documento.data().guias;
+      const index = guias.findIndex(g => g.id_heka === id_heka); 
+
+      if(index === -1) throw new Error("La guía ingresada no exite en dicho documento");
+
+      if(replace) {
+        guias[index] = replacer;
+      } else {
+        for (let campo in replacer) {
+          guias[index][campo] = replacer[campo];
+        }
+      }
+      const ultimaActualizacion = new Date();
+
+      await updateDoc(docRef, {guias, ultimaActualizacion});
+      dispatch(getAllGuias());
+    } catch (e) {
+      console.error("Error al actualizar guia del documento " + id_doc + ". Error: " + e.message);
     }
+
   }
 }
 
-export const recibirGuia = (guia) => {
-  return async (dispatch) => {
-    try {
-      const docRef = doc(dbFirestore, `guias/${guia}`);
-      await updateDoc(docRef, {
-        recibidoEnPunto: true,
-      });
-      dispatch(getAllGuias());
-    } catch (error) {
-      console.log(`ERROR en GuiasAction: recibirGuia ${error}`);
+// función que consulta los números de guía en los usuarios de heka
+export const findGuiaExterna = async (numGuia) => {
+  const argsWhere = [
+    ["id_heka", "==", numGuia], 
+    ["numeroGuia", "==", numGuia]
+  ];
+
+  let guiaEncontrada;
+  // itero entre los argumentos que van en el where hasta conseguir un documento que coincida
+  for await(let args of argsWhere) {
+    const docRef = query(
+      collectionGroup(dbFirestore, "guias"), 
+      limit(1),
+      // where(...args)
+    );
+
+    const q = await getDocs(docRef);
+    
+    // Si detectamos un query efectivo (la mayor catidad debe ser 1)
+    // llenamos guiaEncontrada y detenemos el bucle
+    if(q.size) {
+      q.forEach(doc => guiaEncontrada = doc);
+      break;
     }
-  };
+  }
+
+  // debería devolver la guía que se haya encontrado en caso de que exista
+  return guiaEncontrada;
+
+}
+
+/*funcion que recibe como parámetro el id_oficina y id_heka. 
+ Devuelve el documento que contiene la guía de la oficina 
+ o indefinido en caso de inexistencia. */
+const buscarPorIdHeka = async (id, id_guia) => {
+  const coll = collection(dbFirestore, "users", id, "guiasOficina")
+  const q = query(coll, where("ids_heka", "array-contains", id_guia))
+  const querySnapshot = await getDocs(q);
+
+  let respuesta;
+  console.log(querySnapshot.size);
+  querySnapshot.forEach(doc => respuesta = doc);
+
+  return respuesta;
+}
+
+/* 
+  numGuia: Guía que se va a consultar (id_heka, numGuia transportadora),
+  office_id: el identificador de la oficina al que se va a realizar las consultas
+*/
+export const recibirGuia = async (numGuia, office_id) => {
+  try {
+    //argumentos de filtrados que utilizaré en el where de firebase
+    const guiaEncontrada = await findGuiaExterna(numGuia);
+
+    //primero buscaremos si la guía efectivamente existe
+    if(!guiaEncontrada) {
+      // Si no exite, devolvemos un mensaje de error
+      return new Object({
+        type: "error",
+        swal: {
+          icon: "error",
+          text: "Guia no encontrada."
+        }
+      });
+    }
+
+    const id_heka = guiaEncontrada.id;
+
+    // Luego buscamos si el punto ya tiene guardada la guía
+    const guardada = await buscarPorIdHeka(office_id, id_heka);
+    const guia = guiaEncontrada.data();
+    const actualizar = new Object({
+      en_oficina: true
+    });
+    guia.en_oficina = true;
+    
+    let respuesta;
+    if(guardada) {
+      // si la guía ya fue guardada previo a una notificacion
+      // se envía un objeto para actualizarla      
+      const ids = guardada.data().guias;
+      
+      if(ids && ids.some(g => g.en_oficina && g.id_heka === id_heka)) {
+        // Si ya la guía está registrada y recibida correctamente, se envía un mensaje notificando el caso
+        respuesta = new Object({
+          type: "error",
+          success: false, 
+          swal: {
+            icon: "warning",
+            title: "La guía ya ha sido recibida correctamente.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+          }
+        });
+      } else {
+        const id_doc = guardada.id;
+        respuesta = new Object({
+          type: "guardada", actualizar, guia, id_heka, id_doc,
+          success: true,
+        });
+      }
+    } else if(guiaEncontrada.data().office_id === office_id) {
+      // sino, se envía uno para registrarla, siempre que se verifique que la oficina es la misma
+      respuesta = new Object({
+        type: "no guardada", guia,
+        success: true
+      });
+    } else {
+      // Si llega a esta condición es porque la guía no pertenece a la oficina, y por ende no está registrada
+      respuesta = new Object({
+        type: "no pertenece", guia,
+        success: true, 
+        swal: {
+          icon: "warning",
+          text: "Esta guía inicialmente no fue destinada para recibir en esta oficina, ¿estás seguro que deseas recibirla?",
+          showCloseButton: true,
+          showCancelButton: true,
+          confirmButtonText: "Si, Recibir.",
+          cancelButtonText: "No, cancelar."
+        }
+      });
+    }
+
+    console.log(respuesta);
+    return respuesta;
+  } catch (error) {
+    console.log(`ERROR en GuiasAction: recibirGuia ${error}`);
+  }
 };
+
+export const actualizaEstadoGuiaUsuario = (id_heka, user_id, actualizar) => {
+  const docRef = doc(dbFirestore, "usuarios", user_id, "guias", id_heka);
+
+  updateDoc(docRef, actualizar);
+}
