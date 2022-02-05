@@ -1,84 +1,67 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllGuias, addGuia } from "../../redux/actions/GuiasAction";
+import { Nav } from "react-bootstrap";
 import "./guias.css";
 import TableGuias from "./TableGuias";
 const Guias = () => {
   const dispatch = useDispatch();
   const { guias } = useSelector((state) => state.guias);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(guias);
+  const [filter, setFilter] = useState("");
   useEffect(() => {
     guias.length <= 0 && dispatch(getAllGuias());
-    // for (let i = 1; i < 20; i++) {
-    //   dispatch(addGuia(i))
-    // }
-    // eslint-disable-next-line
   }, [dispatch]);
+
   useEffect(() => {
-    filtrar("Historial");
-    // eslint-disable-next-line
-  }, [guias]);
+    filtrar();
+  }, [guias])
 
   const filtrar = (filter) => {
     try {
       if (filter === "Proceso") {
-        const newArray = guias.filter((guia) => !guia.recibidoEnPunto);
-        console.log(newArray);
+        const newArray = guias.filter((guia) => !guia.recibidoEnPunto && !guia.entregadaDestinatario);
         setData(newArray);
-      } else if (filter === "Punto") {
-        const newArray = guias.filter((guia) => guia.recibidoEnPunto);
+      } else if (filter === "Recibidos") {
+        const newArray = guias.filter((guia) => guia.recibidoEnPunto && !guia.entregadaDestinatario);
+        setData(newArray);
+      } else if (filter === "Entregados") {
+        const newArray = guias.filter((guia) => guia.entregadaDestinatario);
         setData(newArray);
       } else {
         setData(guias);
       }
+      setFilter(filter);
     } catch (error) {
       console.log(`ERROR en Guias.jsx en filtrar: ${error}`);
     }
   };
 
-  
+
   return (
     <div className="container">
-       <h2 className="text-center">Guías</h2>
-      
-      <div className="row mt-4 d-flex justify-content-center">
-        <div
-          onClick={() => filtrar("Historial")}
-          className="col-5 col-sm-4 col-lg-3 text-center border historialPendientes"
-        >
-          <h3>Todas</h3>
-        </div>
-        <div
-          onClick={() => filtrar("Proceso")}
-          className="col-5 col-sm-4 col-lg-3 text-center border historialPendientes"
-        >
-          <h3>Proceso</h3>
-        </div>
-        <div
-          onClick={() => filtrar("Recibidos")}
-          className="col-5 col-sm-4 col-lg-3 text-center border historialPendientes"
-        >
-          <h3>Recibidos</h3>
-        </div>
-        <div
-          onClick={() => filtrar("Entregados")}
-          className="col-5 col-sm-4 col-lg-3 text-center border historialPendientes"
-        >
-          <h3>Entregados</h3>
-        </div>
+      <h2 className="text-center">Historial guías</h2>
+      <Nav variant="pills"
+        className="flex-nowrap overflow-auto"
+        justify onSelect={filtrar} defaultActiveKey=""
+      >
+        <Nav.Item>
+          <Nav.Link eventKey="" className="text-mutted">Todas</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="Proceso">Proceso</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="Recibidos">Recibidas</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="Entregados">Entregadas</Nav.Link>
+        </Nav.Item>
+      </Nav>
+
+      <div className="mt-2">
+        <TableGuias guias={data} filter={filter}/>
       </div>
-      {guias.length < 1 ? (
-        <div className="mt-5 text-center">
-          {/* <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner> */}
-          <h5>No hay registro de guías</h5>
-        </div>
-      ) : (
-        <div className="text-center mt-2">
-          <TableGuias guias={data} />
-        </div>
-      )}
     </div>
   );
 };

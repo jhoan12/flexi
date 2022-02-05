@@ -12,16 +12,18 @@ import { Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { actualizarGuia } from "../../redux/actions/GuiasAction";
 import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
-const TableGuias = ({ guias }) => {
+const TableGuias = ({ guias, filter }) => {
   const dispatch = useDispatch();
   const [modalShow, setModalShow] = useState(false);
   const [dataGuia, setDataGuia] = useState({});
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(guias);
 
   useEffect(() => {
+    console.log(guias);
     setData(guias)
   }, [guias]);
   
+  const omitBtnAction = !["Recibidos", ""].includes(filter);
 
   const columns = [
     {
@@ -45,12 +47,12 @@ const TableGuias = ({ guias }) => {
     {
       name: "Acción",
       selector: (row) => {
-        if(!row.recibidoEnPunto) return "";
-        if(row.entregada) return "Entregada";
+        if(!row.recibidoEnPunto) return "En proceso";
+        if(row.entregadaDestinatario) return "Entregada";
         return <Button onClick={() => handleEntregarClick(row)}>Entregar</Button>
       },
       button: true,
-      omit: true   
+      omit: omitBtnAction  
     }
   ];
 
@@ -71,7 +73,6 @@ const TableGuias = ({ guias }) => {
 
   const buscar = (e) => {
     try {
-      console.log("este es el 35", e);
       let newArray
       let texto = e.toUpperCase()
       console.log(texto);
@@ -111,20 +112,13 @@ const TableGuias = ({ guias }) => {
 
   }
 
+  const sinRegistro = guias.length ? <h5 className="m-3 text-center">No hay registro en esta tabla</h5> : ""
+
   return (
     <div className="row">
     <div className="col-12 d-flex justify-content-center">
      
-       
-     
-      {/* <div className="col-11 my-3 buscador ">
-      <input 
-        type="text" 
-        placeholder="Search.."
-        onChange={(e) => buscar(e.target.value)}
-        />
-      </div> */}
-      <Form.Control type="text" className="m-3" placeholder="Search.." onChange={(e) => buscar(e.target.value)}/>
+      <Form.Control type="text" className="m-3" placeholder="Buscar..." onChange={(e) => buscar(e.target.value)}/>
       
     </div>
       <div>
@@ -135,6 +129,7 @@ const TableGuias = ({ guias }) => {
           pagination
           pointerOnHover
           highlightOnHover
+          noDataComponent={sinRegistro}
           onRowClicked={(e) => handleButtonClick(e)}
         />
       </div>
