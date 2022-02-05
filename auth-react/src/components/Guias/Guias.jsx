@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllGuias, addGuia } from "../../redux/actions/GuiasAction";
+import { getAllGuias } from "../../redux/actions/GuiasAction";
 import { Nav } from "react-bootstrap";
 import "./guias.css";
 import TableGuias from "./TableGuias";
@@ -14,7 +14,7 @@ const Guias = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    filtrar();
+    filtrar(filter);
   }, [guias])
 
   const filtrar = (filter) => {

@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import DataTable from "react-data-table-component";
 import { useDispatch } from 'react-redux';
 import Swal from "sweetalert2";
 import { getGuia, guiasHistorial } from '../../redux/actions/GuiasAction';
 function TableNotificaciones({data}) {
     const dispatch = useDispatch()
-    const [modalShow, setModalShow] = useState(false);
-    const [dataNotificacion, setDataNotificacion] = useState({});
     const columns = [
       {
         name: "Fecha",
@@ -35,8 +33,6 @@ function TableNotificaciones({data}) {
 
     const handleButtonClick = (e) => {
       try {
-          setDataNotificacion(e);
-        //  console.log(e);
           Swal.fire({
             title: 'Te llegara un paquete',
             text: e.mensaje,

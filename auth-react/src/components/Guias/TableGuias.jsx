@@ -76,13 +76,13 @@ const TableGuias = ({ guias, filter }) => {
       let newArray
       let texto = e.toUpperCase()
       console.log(texto);
-      if(e != ""){
+      if(e !== ""){
         newArray = guias.filter((guia) => guia.transportadora.toUpperCase().includes(texto))
-        if(newArray.length == 0){
+        if(newArray.length === 0){
           newArray = guias.filter((guia) => guia.fecha.toUpperCase().includes(texto))
-          if(newArray.length == 0){
+          if(newArray.length === 0){
             newArray = guias.filter((guia) => guia.numeroGuia.toUpperCase().includes(texto))
-            if(newArray.length == 0){
+            if(newArray.length === 0){
               newArray = guias.filter((guia) => guia.id_heka.toUpperCase().includes(texto))
             }
           }

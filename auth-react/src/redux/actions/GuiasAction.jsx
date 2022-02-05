@@ -1,16 +1,9 @@
 import { types } from "../types/types";
 import { dbFirestore } from "../../firebase";
 import {
-  collection,
-  getDocs,
-  updateDoc,
-  doc,
-  setDoc,
-  getDoc,
-  where,
-  query,
-  collectionGroup,
-  limit, deleteDoc, writeBatch
+  collection, getDocs, updateDoc, doc,
+  setDoc, getDoc, where, query, collectionGroup,
+  limit
 } from "@firebase/firestore";
 import { aceptarEliminar, addNotificacion } from "./NotificacionesAction";
 import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
@@ -222,7 +215,7 @@ export const getGuia = (id_user, guia) => {
 };
 
 export const guiasHistorial = (guia, id_notification) => {
-  const acceptedObject = new Object();
+  const acceptedObject = {};
   const acceptedValues = ["numeroGuia", "transportadora", "id_user", "id_heka", "fecha"];
   acceptedValues.forEach(d => acceptedObject[d] = guia[d]);
 
@@ -401,13 +394,13 @@ export const recibirGuia = async (numGuia, office_id) => {
     //primero buscaremos si la guía efectivamente existe
     if(!guiaEncontrada) {
       // Si no exite, devolvemos un mensaje de error
-      return new Object({
+      return {
         type: "error",
         swal: {
           icon: "error",
           text: "Guia no encontrada."
         }
-      });
+      };
     }
 
     const id_heka = guiaEncontrada.id;
@@ -426,7 +419,7 @@ export const recibirGuia = async (numGuia, office_id) => {
       
       if(ids && ids.some(g => g.recibidoEnPunto && g.id_heka === id_heka)) {
         // Si ya la guía está registrada y recibida correctamente, se envía un mensaje notificando el caso
-        respuesta = new Object({
+        respuesta = {
           type: "error",
           success: false, 
           swal: {
@@ -437,23 +430,23 @@ export const recibirGuia = async (numGuia, office_id) => {
             showConfirmButton: false,
             timer: 3000,
           }
-        });
+        };
       } else {
         const id_doc = guardada.id;
-        respuesta = new Object({
+        respuesta = {
           type: "guardada", actualizar, guia, id_heka, id_doc,
           success: true,
-        });
+        };
       }
     } else if(guiaEncontrada.data().id_oficina === office_id) {
       // sino, se envía uno para registrarla, siempre que se verifique que la oficina es la misma
-      respuesta = new Object({
+      respuesta = {
         type: "no guardada", guia,
         success: true
-      });
+      };
     } else {
       // Si llega a esta condición es porque la guía no pertenece a la oficina, y por ende no está registrada
-      respuesta = new Object({
+      respuesta = {
         type: "no pertenece", guia,
         success: true, 
         swal: {
@@ -464,7 +457,7 @@ export const recibirGuia = async (numGuia, office_id) => {
           confirmButtonText: "Si, Recibir.",
           cancelButtonText: "No, cancelar."
         }
-      });
+      };
     }
 
     console.log(respuesta);
@@ -479,10 +472,3 @@ export const actualizaEstadoGuiaUsuario = (id_heka, user_id, actualizar) => {
 
   updateDoc(docRef, actualizar);
 }
-
-const x = async () => {
-  const r = collection(dbFirestore, "users/Yw0S25wPutV0qtvmKyGmXabpvGb2/guiasOficina");
-  const docs = await getDocs(r);
-  docs.forEach(d => deleteDoc(d.ref));
-}
-// x();
