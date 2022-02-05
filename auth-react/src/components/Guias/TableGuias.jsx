@@ -77,21 +77,24 @@ const TableGuias = ({ guias }) => {
       console.log(texto);
       if(e != ""){
         newArray = guias.filter((guia) => guia.transportadora.toUpperCase().includes(texto))
+        if(newArray.length == 0){
+          newArray = guias.filter((guia) => guia.fecha.toUpperCase().includes(texto))
+          if(newArray.length == 0){
+            newArray = guias.filter((guia) => guia.numeroGuia.toUpperCase().includes(texto))
+            if(newArray.length == 0){
+              newArray = guias.filter((guia) => guia.id_heka.toUpperCase().includes(texto))
+            }
+          }
+        }
         setData(newArray)
       }else{
         setData(guias)
       }
-      // e != "" ? setData(guias.filter((guia) => guia.transportadora.toUpperCase().includes(texto))) : setData(guias)
-      // e != "" ? setData(guias.filter((guia) => guia.fecha.toUpperCase().includes(texto))) : setData(guias)
-      // e != "" ? setData(guias.filter((guia) => guia.numeroGuia.includes(texto))) : setData(guias)
-      // e != "" ? setData(guias.filter((guia) => guia.id_heka.includes(texto))) : setData(guias)
-      // console.log(guias.filter((guia) => guia.transportadora.toUpperCase().includes(texto)));
-      // console.log(guias.map((guia) => guia.filter((element) => element.toUpperCase().includes(texto))))
     } catch (error) {
       console.log(`ERROR TableGuias buscar: ${error}`);
     }
   }
-  
+
   const handleEntregarClick = async (row) => {
     Swal.fire({
       title: "Entregando guía",
