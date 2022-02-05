@@ -58,7 +58,7 @@ const TableGuias = ({ guias }) => {
     try {
       if (e.recibidoEnPunto) {
         console.log("id desde table", e.id_heka);
-        const datosGuia = await getDoc(doc(dbFirestore, `guias/${e.id_heka}`));
+        const datosGuia = await getDoc(doc(dbFirestore, `usuarios/${e.id_user}/guias/${e.id_heka}`));
         setDataGuia(datosGuia.data());
         setModalShow(true);
       } else {

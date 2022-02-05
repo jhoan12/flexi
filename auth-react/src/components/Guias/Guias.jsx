@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllGuias } from "../../redux/actions/GuiasAction";
+import { getAllGuias, addGuia } from "../../redux/actions/GuiasAction";
 import "./guias.css";
 import TableGuias from "./TableGuias";
 const Guias = () => {
@@ -9,8 +9,8 @@ const Guias = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     guias.length <= 0 && dispatch(getAllGuias());
-    // for (let i = 0; i < 5; i++) {
-    // dispatch(addGuia(2))
+    // for (let i = 1; i < 20; i++) {
+    //   dispatch(addGuia(i))
     // }
     // eslint-disable-next-line
   }, [dispatch]);

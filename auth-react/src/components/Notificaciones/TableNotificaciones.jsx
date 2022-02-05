@@ -52,12 +52,10 @@ function TableNotificaciones({data}) {
             if (result.isConfirmed) {
               console.log(e);
               const infoGuiaConsultada = await getGuia(e.user_id, e.id_heka)(dispatch);
-              const datos_a_tomar = new Array("numeroGuia", "transportadora", "id_user", "id_heka", "fecha")
-              const guia = new Object();
-              datos_a_tomar.forEach(d => guia[d] = infoGuiaConsultada[d]);
-              dispatch(guiasHistorial(guia, e.id))
-            } else if ("pase ", result.isDenied) {
-              Swal.fire('Error', '', 'info')
+              if(!infoGuiaConsultada) {
+                return Swal.fire("Error", "Esta guía ya no existe o ha sido eliminada.");
+              }
+              dispatch(guiasHistorial(infoGuiaConsultada, e.id));
             }
           })
       } catch (error) {

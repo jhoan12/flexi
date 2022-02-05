@@ -12,77 +12,102 @@ import {
   collectionGroup,
   limit, deleteDoc, writeBatch
 } from "@firebase/firestore";
-import { aceptarEliminar } from "./NotificacionesAction";
+import { aceptarEliminar, addNotificacion } from "./NotificacionesAction";
 import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
-const random = () => {
-  return Math.floor(Math.random() * (90000 - 10000 + 1) + 10000);
+const random = (range, initial = 0) => {
+  return Math.floor(Math.random() * range) + initial;
 };
 
 export const addGuia = (id_heka) => {
   return async () => {
     try {
       // const id_heka = 1;
+      const tr = ["SERVIENTREGA", "INTERRAPIDISIMO", "TCC", "ENVIA"];
+
       const data = {
-        recibidoEnPunto: false,
-        debe: false,
-        total_pagar: 0,
-        celularD: "1231231231",
-        nombreD: "Ikaro",
-        timeline: 1637771937688,
-        identificacionD: 123,
-        valor: 50000,
-        transportadora: "ENVIA",
-        departamentoD: "CUNDINAMARCA",
-        tipo_doc_dest: "2",
-        detalles: {
-          seguro: 50000,
-          peso_con_volumen: 0,
-          recaudo: 50000,
-          comision_trasportadora: 3000,
-          flete: 8250,
-          peso_liquidar: 3,
-          peso_real: 3,
-          total: 13250,
-          comision_heka: 2000,
+        "ciudadR": "CABRERA",
+        "ciudadD": "CABRERA",
+        "departamentoD": "CUNDINAMARCA",
+        "departamentoR": "CUNDINAMARCA",
+        "alto": "1",
+        "ancho": "1",
+        "largo": "1",
+        "correoR": "usuarionuevo@gmail.com",
+        "centro_de_costo": "SellerNuevo",
+        "prueba": true,
+        "debe": -15650,
+        "detalles": {
+            "peso_real": 3,
+            "flete": 8250,
+            "comision_heka": 2000,
+            "comision_trasportadora": 3000,
+            "peso_liquidar": 3,
+            "peso_con_volumen": 0,
+            "total": 15650,
+            "recaudo": 50000,
+            "seguro": 50000,
+            "sobreflete_oficina": 2400
         },
-        peso: 3,
-        dane_ciudadR: "25120000",
-        ancho: "1",
-        recoleccion_esporadica: 1,
-        correoD: "notiene@gmail.com",
-        departamentoR: "CUNDINAMARCA",
-        id_user: "000000",
-        telefonoD: "1231231231",
-        direccionR: "calle barrio",
-        estado: "",
-        direccionD: "direccion  ",
-        costo_envio: 13250,
-        ciudadD: "CABRERA",
-        ciudadR: "CABRERA",
-        correoR: "calle@gmail.com",
-        numeroGuia: "2128690096",
-        nombreR: "Efesto",
-        seguro: 50000,
-        celularR: "321234454",
-        dane_ciudadD: "25120000",
-        id_archivoCargar: "hfN0zDzEESoRLa+25qt/5w==",
-        has_sticker: true,
-        observaciones: "",
-        ultima_actualizacion: {
-          seconds: 1637776800,
-          nanoseconds: 2000000,
+        "oficina": true,
+        "datos_oficina": {
+            "id_oficina": "Yw0S25wPutV0qtvmKyGmXabpvGb2",
+            "ciudad": "CALI(VALLE DEL CAUCA)",
+            "barrio": "los bellos",
+            "direccion": "Kra 23 #40-40",
+            "celular": "3102584568",
+            "numero_documento": "1234567989",
+            "tipo_documento": "CC",
+            "nombres": "NombreO",
+            "apellidos": "ApellidoO",
+            "correo": "correo@dominio.com",
+            "nombre_completo": "NombreO ApellidoO"
         },
-        dice_contener: "calzado",
-        fecha: "2021-11-24",
-        alto: "1",
-        centro_de_costo: "Sellerprobando",
-        seguimiento_finalizado: false,
-        largo: "1",
-        type: "PAGO CONTRAENTREGA",
-        id_heka,
+        "id_oficina": "Yw0S25wPutV0qtvmKyGmXabpvGb2",
+        "peso": 3,
+        "costo_envio": 15650,
+        "valor": 50000,
+        "seguro": 50000,
+        "type": "PAGO CONTRAENTREGA",
+        "dane_ciudadR": "25120000",
+        "dane_ciudadD": "25120000",
+        "transportadora": tr[random(3)],
+        "nombreR": "USUARIO PRUEBA",
+        "direccionR": "sd asd",
+        "celularR": "123",
+        "nombreD": "nombre",
+        "identificacionD": "1234567989",
+        "direccionD": "Kra 23 #40-40 los bellos ",
+        "telefonoD": "1231231231",
+        "celularD": "3102584568",
+        "correoD": "correo@dominio.com",
+        "tipo_doc_dest": "2",
+        "dice_contener": "calzado",
+        "observaciones": "",
+        "recoleccion_esporadica": 0,
+        "fecha": "2022-01-"+random(30,1),
+        "timeline": new Date().getTime(),
+        "id_user": "id_user",
+        "seguimiento_finalizado": false,
+        "id_heka": id_heka.toString(),
+        "numeroGuia": "212" + random(1000000, 1000000),
+        "id_archivoCargar": "29ybztS2lbcRLa+25qt/5w==",
+        "has_sticker": true
       };
       await setDoc(doc(dbFirestore, `usuarios/id_user/guias/${id_heka}`), data);
-      console.log("cree 1");
+      await addNotificacion(id_heka, {
+        visible_user: false,
+        visible_admin: false,
+        visible_office: true,
+        icon: ["exclamation", "danger"],
+        user_id: "id_user",
+        office_id: "Yw0S25wPutV0qtvmKyGmXabpvGb2",
+        mensaje: "Mensaje a mostrar en la notificación",
+        href: "id destino",
+        fecha: data.fecha,
+        timeline: new Date().getTime(),
+        id_heka
+      })();
+      console.log("creada ", id_heka);
     } catch (error) {
       console.log(`ERROR en GuiasAction: addGuia ${error}`);
     }
@@ -198,7 +223,7 @@ export const getGuia = (id_user, guia) => {
 
 export const guiasHistorial = (guia, id_notification) => {
   const acceptedObject = new Object();
-  const acceptedValues = new Array("numeroGuia", "transportadora", "id_user", "id_heka", "fecha");
+  const acceptedValues = ["numeroGuia", "transportadora", "id_user", "id_heka", "fecha"];
   acceptedValues.forEach(d => acceptedObject[d] = guia[d]);
 
   return async (dispatch, getState) => {
@@ -215,6 +240,10 @@ export const guiasHistorial = (guia, id_notification) => {
         visible: true,
       };
 
+      const verificar = await buscarPorIdHeka(id, acceptedObject.id_heka);
+      if(id_notification && verificar) 
+        return dispatch(aceptarEliminar(id_notification));
+      
       const numGuia = await getDoc(
         doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`)
       );
@@ -326,7 +355,7 @@ export const findGuiaExterna = async (numGuia) => {
     const docRef = query(
       collectionGroup(dbFirestore, "guias"), 
       limit(1),
-      // where(...args),
+      where(...args),
       // where("oficina", "==", true)
     );
 
@@ -416,7 +445,7 @@ export const recibirGuia = async (numGuia, office_id) => {
           success: true,
         });
       }
-    } else if(guiaEncontrada.data().office_id === office_id) {
+    } else if(guiaEncontrada.data().id_oficina === office_id) {
       // sino, se envía uno para registrarla, siempre que se verifique que la oficina es la misma
       respuesta = new Object({
         type: "no guardada", guia,
@@ -450,3 +479,10 @@ export const actualizaEstadoGuiaUsuario = (id_heka, user_id, actualizar) => {
 
   updateDoc(docRef, actualizar);
 }
+
+const x = async () => {
+  const r = collection(dbFirestore, "users/Yw0S25wPutV0qtvmKyGmXabpvGb2/guiasOficina");
+  const docs = await getDocs(r);
+  docs.forEach(d => deleteDoc(d.ref));
+}
+// x();

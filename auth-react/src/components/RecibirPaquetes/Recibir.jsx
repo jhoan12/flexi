@@ -53,6 +53,7 @@ const RecibirPaquete = () => {
         estado: "Recibido oficina",
         seguimiento_finalizado: true
       });
+      dispatch(getAllGuias());
 
     } catch (error) {
       console.log(`ERROR en Recibir.jsx en action: ${error}`)
