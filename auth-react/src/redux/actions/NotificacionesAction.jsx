@@ -49,7 +49,11 @@ export const getAllNotificaciones = () => {
     try {
       const {id} = getState().user
       const dataNotificaciones = [];
-      const notificaciones = query(collection(dbFirestore, "notificaciones"), where("office_id", "==", id));
+      const notificaciones = query(
+        collection(dbFirestore, "notificaciones"), 
+        where("office_id", "==", id),
+        where("visible_office", "==", true)
+      );
       const querySnapshot = await getDocs(notificaciones)
         querySnapshot.forEach((doc) => {
           const data = doc.data();

@@ -1,7 +1,25 @@
 import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Spinner } from "react-bootstrap";
 
 const ModalInfoHistorial = ({ show, setModalShow, data }) => {
+  if(!data) {
+    return (
+      <Modal
+        show={show}
+        size="sm"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Body>
+          <div className="text-center">
+            <h2>Cargando...</h2>
+            <Spinner animation="border"></Spinner>
+          </div>
+        </Modal.Body>
+      </Modal>
+    )
+  }
+
   return (
     <Modal
       show={show}

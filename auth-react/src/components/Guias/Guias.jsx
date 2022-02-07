@@ -40,22 +40,22 @@ const Guias = () => {
 
   return (
     <div className="container">
-      <h2 className="text-center">Historial guías</h2>
+      <h2 className="text-center">Historial de servicios</h2>
       <Nav variant="pills"
         className="flex-nowrap overflow-auto"
         justify onSelect={filtrar} defaultActiveKey=""
       >
         <Nav.Item>
-          <Nav.Link eventKey="" className="text-mutted">Todas</Nav.Link>
+          <Nav.Link eventKey="" className="text-mutted">Todos</Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link eventKey="Proceso">Proceso</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="Recibidos">Recibidas</Nav.Link>
+          <Nav.Link eventKey="Recibidos">Recibidos</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="Entregados">Entregadas</Nav.Link>
+          <Nav.Link eventKey="Entregados">Entregados</Nav.Link>
         </Nav.Item>
       </Nav>
 

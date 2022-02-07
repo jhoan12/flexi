@@ -15,7 +15,7 @@ import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
 const TableGuias = ({ guias, filter }) => {
   const dispatch = useDispatch();
   const [modalShow, setModalShow] = useState(false);
-  const [dataGuia, setDataGuia] = useState({});
+  const [dataGuia, setDataGuia] = useState();
   const [data, setData] = useState(guias);
 
   useEffect(() => {
@@ -59,11 +59,14 @@ const TableGuias = ({ guias, filter }) => {
   const handleButtonClick = async (e) => {
     try {
       if (e.recibidoEnPunto) {
+        setModalShow(true);
         console.log("id desde table", e.id_heka);
+        await new Promise((res) => setTimeout(res("completado"), 10000))
         const datosGuia = await getDoc(doc(dbFirestore, `usuarios/${e.id_user}/guias/${e.id_heka}`));
         setDataGuia(datosGuia.data());
-        setModalShow(true);
       } else {
+        const movimientosGuia = await getDoc(doc(dbFirestore, "usuarios", e.id_user, "movimientoGuias", e.id_heka));
+        if(movimientosGuia.exists()) console.log("Los movimientos de la guia => ", movimientosGuia.data().movimientos);
         Swal.fire("Este paquete aun no ha sido registrado");
       }
     } catch (error) {
@@ -116,12 +119,12 @@ const TableGuias = ({ guias, filter }) => {
 
   return (
     <div className="row">
-    <div className="col-12 d-flex justify-content-center">
-     
-      <Form.Control type="text" className="m-3" placeholder="Buscar..." onChange={(e) => buscar(e.target.value)}/>
+      <div className="col-12 d-flex justify-content-center">
       
-    </div>
-      <div>
+        <Form.Control type="text" className="m-3" placeholder="Buscar..." onChange={(e) => buscar(e.target.value)}/>
+        
+      </div>
+      <div className="col-12">
 
         <DataTable
           columns={columns}
