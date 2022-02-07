@@ -49,12 +49,12 @@ const Profile = () => {
           </div>
           <div className="col-12 col-md-6 mb-4 border-bottom ">
             <h3>
-              Telefono: <strong>{user.telephone}</strong>{" "}
+            Celular: <strong>{user.phoneNumber}</strong>{" "}
             </h3>
           </div>
           <div className="col-12 col-md-6 mb-4 border-bottom ">
             <h3>
-              Celular: <strong>{user.phoneNumber}</strong>{" "}
+              Celular 2: <strong>{user.telephone}</strong>{" "}
             </h3>
           </div>
           <div className="col-12 col-md-6 mb-4 border-bottom ">

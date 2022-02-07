@@ -30,7 +30,6 @@ const Login = () => {
     estaRegistrandose
       ? dispatch(registerUser(data, navigate))
       : (dispatch(loginUser(data, navigate)));
-    console.log("inicie ")
   };
 
   return (
