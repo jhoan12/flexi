@@ -115,7 +115,7 @@ const TableGuias = ({ guias, filter }) => {
 
   }
 
-  const sinRegistro = guias.length ? <h5 className="m-3 text-center">No hay registro en esta tabla</h5> : ""
+  const sinRegistro = <h5 className="m-3 text-center">No hay registro en esta tabla</h5>
 
   return (
     <div className="row">
