@@ -16,7 +16,7 @@ export const loginUser = (user, navigate) => {
         user.email,
         user.password
       );
-      const docSnap = await getDoc(doc(dbFirestore, `users/${login.user.uid}`));
+      const docSnap = await getDoc(doc(dbFirestore, `oficinas/${login.user.uid}`));
       const data = docSnap.data();
       localStorage.setItem("isLoged", true);
       dispatch({
@@ -49,7 +49,7 @@ export const loginUser = (user, navigate) => {
 export const getUser = (id, token) => {
   return async (dispatch) => {
     try {
-      const docSnap = await getDoc(doc(dbFirestore, `users/${id}`));
+      const docSnap = await getDoc(doc(dbFirestore, `oficinas/${id}`));
       const data = docSnap.data();
       dispatch({
         type: types.getUser,
@@ -102,7 +102,7 @@ export const registerUser = (user, navigate) => {
         termsConditions: user.termsConditions,
       };
       localStorage.setItem("isLoged", true);
-      await setDoc(doc(dbFirestore, `users/${register.user.uid}`), data);
+      await setDoc(doc(dbFirestore, `oficinas/${register.user.uid}`), data);
       dispatch({
         type: types.registerUser,
         payload: {
@@ -134,7 +134,7 @@ export const updateUser = (data) => {
   return async (dispatch, getState) => {
     try {
       const { id, token } = getState().user;
-      const docRef = doc(dbFirestore, `users/${id}`);
+      const docRef = doc(dbFirestore, `oficinas/${id}`);
       await updateDoc(docRef, data);
       dispatch(getUser(id, token));
     } catch (error) {

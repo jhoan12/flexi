@@ -122,7 +122,7 @@ export const getAllGuias = () => {
       if(!id) return;
       
       const q = query(
-        collection(dbFirestore, "users", id, "guiasOficina"),
+        collection(dbFirestore, "oficinas", id, "guiasOficina"),
         where("visible", "==", true)
       );
       const querySnapshot = await getDocs(q);
@@ -245,7 +245,7 @@ export const guiasHistorial = (guia, id_notification) => {
         return dispatch(aceptarEliminar(id_notification));
       
       const numGuia = await getDoc(
-        doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`)
+        doc(dbFirestore, `/oficinas/${id}/guiasOficina/numGuias`)
       );
 
       let numDoc = numGuia.exists() ? numGuia.data().num : 0;
@@ -258,7 +258,7 @@ export const guiasHistorial = (guia, id_notification) => {
 
       if (numDoc >= 1) {
         nombreDoc = "doc_" + numDoc;
-        const document = await getDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`));
+        const document = await getDoc(doc(dbFirestore, `/oficinas/${id}/guiasOficina/${nombreDoc}`));
 
         if(!document.exists) throw new Error("Aparentemente no existe este documento");
         const addGuia = document.data();
@@ -270,7 +270,7 @@ export const guiasHistorial = (guia, id_notification) => {
         if (next) {
           numDoc++;
           nombreDoc = "doc_" + numDoc;
-          await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
+          await setDoc(doc(dbFirestore, `/oficinas/${id}/guiasOficina/numGuias`), {
             num: numDoc,
           });
           toSend = await newDoc(numDoc, nombreDoc)
@@ -288,7 +288,7 @@ export const guiasHistorial = (guia, id_notification) => {
       async function newDoc(num, nombreDoc) {
         acceptedObject.parent_id = nombreDoc;
         dataGuias.guias.push(acceptedObject);
-        await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/numGuias`), {
+        await setDoc(doc(dbFirestore, `/oficinas/${id}/guiasOficina/numGuias`), {
           num,
         });
 
@@ -302,7 +302,7 @@ export const guiasHistorial = (guia, id_notification) => {
       const guias = toSend.guias;
       toSend.ids_heka = guias.map(guia => guia.id_heka);
       toSend.numeroGuias = guias.map(guia => guia.numeroGuia);
-      await setDoc(doc(dbFirestore, `/users/${id}/guiasOficina/${nombreDoc}`), toSend);
+      await setDoc(doc(dbFirestore, `/oficinas/${id}/guiasOficina/${nombreDoc}`), toSend);
       if(id_notification) dispatch(aceptarEliminar(id_notification));
     } catch (error) {
       console.log(`ERROR en GuiasAction: guiasHistorial ${error}`);
@@ -314,7 +314,7 @@ export const actualizarGuia = (replacer, id_heka, id_doc, replace) => {
   return async (dispatch, getState) => {
     try {
       const id_office = getState().user.id;
-      const docRef = doc(dbFirestore, "users", id_office, "guiasOficina", id_doc);
+      const docRef = doc(dbFirestore, "oficinas", id_office, "guiasOficina", id_doc);
       const documento = await getDoc(docRef);
 
       if(!documento.exists()) throw new Error("No exite el documento solicitado");
@@ -378,7 +378,7 @@ export const findGuiaExterna = async (numGuia) => {
  Devuelve el documento que contiene la guía de la oficina 
  o indefinido en caso de inexistencia. */
 const buscarPorIdHeka = async (id, id_guia) => {
-  const coll = collection(dbFirestore, "users", id, "guiasOficina")
+  const coll = collection(dbFirestore, "oficinas", id, "guiasOficina")
   const q = query(coll, where("ids_heka", "array-contains", id_guia))
   const querySnapshot = await getDocs(q);
 
@@ -481,7 +481,7 @@ export const actualizaEstadoGuiaUsuario = (id_heka, user_id, actualizar) => {
 }
 
 const x = async () => {
-  const r = collection(dbFirestore, "users/Yw0S25wPutV0qtvmKyGmXabpvGb2/guiasOficina");
+  const r = collection(dbFirestore, "oficinas/Yw0S25wPutV0qtvmKyGmXabpvGb2/guiasOficina");
   const docs = await getDocs(r);
   docs.forEach(d => deleteDoc(d.ref));
 }
