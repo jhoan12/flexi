@@ -19,23 +19,24 @@ export const loginUser = (user, navigate) => {
       const docSnap = await getDoc(doc(dbFirestore, `oficinas/${login.user.uid}`));
       const data = docSnap.data();
       localStorage.setItem("isLoged", true);
+      console.log("datos user", data);
       dispatch({
         type: types.loginUser,
         payload: {
           token: login.user.accessToken,
           id: login.user.uid,
-          name: data.name,
-          lastName: data.lastName,
-          numDocument: data.numDocument,
-          email: data.email,
+          name: data.nombres,
+          lastName: data.apellidos,
+          numDocument: data.numero_documento,
+          email: data.correo,
           password: data.password,
-          phoneNumber: data.phoneNumber,
-          typeDocument: data.typeDocument,
-          telephone: data.telephone,
-          companyName: data.companyName,
-          descriptionCompany: data.descriptionCompany,
-          city: data.city,
-          direction: data.direction,
+          phoneNumber: data.celular,
+          typeDocument: data.tipo_documento,
+          telephone: data.celular2,
+          companyName: data.nombre_empresa,
+          descriptionCompany: data.descripcion,
+          city: data.ciudad,
+          direction: data.direccion_completa,
           termsConditions: data.termsConditions,
         },
       });
