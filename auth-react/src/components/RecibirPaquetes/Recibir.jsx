@@ -10,12 +10,7 @@ import ModalInfo from "./ModalInfo";
 const RecibirPaquete = () => {
   const dispatch = useDispatch();
   const [numGuia, setnumGuia] = useState("");
-  const { guias, id } = useSelector((state) => {
-    return {
-      guias: state.guias.guias,
-      id: state.user.id
-    }
-  });
+  const { id  } = useSelector((state) => state.user);
 
   const [guia, setGuia] = useState({})
   const [modalShow, setModalShow] = useState(false);

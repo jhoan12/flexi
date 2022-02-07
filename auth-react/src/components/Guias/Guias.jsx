@@ -11,10 +11,12 @@ const Guias = () => {
   const [filter, setFilter] = useState("");
   useEffect(() => {
     guias.length <= 0 && dispatch(getAllGuias());
+    // eslint-disable-next-line
   }, [dispatch]);
 
   useEffect(() => {
     filtrar(filter);
+    // eslint-disable-next-line
   }, [guias])
 
   const filtrar = (filter) => {

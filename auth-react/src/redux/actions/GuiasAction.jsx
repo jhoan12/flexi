@@ -250,7 +250,7 @@ export const guiasHistorial = (guia, id_notification) => {
       let nombreDoc, toSend;
 
       //Definimos la máxima cantidad de guía permitida por documento
-      const maxPermitidas = 5;
+      const maxPermitidas = 250;
 
       if (numDoc >= 1) {
         nombreDoc = "doc_" + numDoc;
