@@ -10,7 +10,7 @@ import { Form } from "react-bootstrap";
 
 import { Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { actualizarGuia } from "../../redux/actions/GuiasAction";
+import { actualizarGuia, actualizaEstadoGuiaUsuario } from "../../redux/actions/GuiasAction";
 import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
 const TableGuias = ({ guias, filter }) => {
   const dispatch = useDispatch();
@@ -19,7 +19,6 @@ const TableGuias = ({ guias, filter }) => {
   const [data, setData] = useState(guias);
 
   useEffect(() => {
-    console.log(guias);
     setData(guias)
   }, [guias]);
   
@@ -60,7 +59,6 @@ const TableGuias = ({ guias, filter }) => {
     try {
       if (e.recibidoEnPunto) {
         setModalShow(true);
-        console.log("id desde table", e.id_heka);
         await new Promise((res) => setTimeout(res("completado"), 10000))
         const datosGuia = await getDoc(doc(dbFirestore, `usuarios/${e.id_user}/guias/${e.id_heka}`));
         setDataGuia(datosGuia.data());
@@ -110,6 +108,10 @@ const TableGuias = ({ guias, filter }) => {
         const actualizar = tipoActualizacionEstado.entregar;
     
         dispatch(actualizarGuia(actualizar, row.id_heka, row.parent_id));
+        actualizaEstadoGuiaUsuario(row.id_heka, row.id_user, {
+          estado: "Entregada destinatario",
+          seguimiento_finalizado: true
+        });
       }
     });
 

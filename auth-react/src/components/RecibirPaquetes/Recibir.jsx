@@ -3,6 +3,7 @@ import { Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import tipoActualizacionEstado from "../../helpers/tipoActualizacionEstado";
 import { actualizaEstadoGuiaUsuario, actualizarGuia, getAllGuias, guiasHistorial, recibirGuia } from "../../redux/actions/GuiasAction";
 import ModalInfo from "./ModalInfo";
 
@@ -35,6 +36,7 @@ const RecibirPaquete = () => {
           dispatch(actualizarGuia(res.actualizar, res.id_heka, res.id_doc));
           break;
         case "no guardada":
+          Object.assign(res.guia, tipoActualizacionEstado.recibir);
           dispatch(guiasHistorial(res.guia));
           break;
         default:

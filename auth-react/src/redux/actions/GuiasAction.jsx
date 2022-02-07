@@ -139,8 +139,7 @@ export const getGuia = (id_user, guia) => {
   return async (dispatch) => {
     try {
       const dataGuia = await getDoc(doc(dbFirestore, `usuarios/${id_user}/guias/${guia}`));
-      console.log("firebase", dataGuia.data());
-      console.log("idguia ", guia);
+      
       if (dataGuia.exists()) {
         dispatch({
           type: types.getGuia,
@@ -218,6 +217,10 @@ export const guiasHistorial = (guia, id_notification) => {
   const acceptedObject = {};
   const acceptedValues = ["numeroGuia", "transportadora", "id_user", "id_heka", "fecha"];
   acceptedValues.forEach(d => acceptedObject[d] = guia[d]);
+  if(guia.recibidoEnPunto) {
+    acceptedObject.recibidoEnPunto = guia.recibidoEnPunto;
+    acceptedObject.estado = guia.estado;
+  }
 
   return async (dispatch, getState) => {
     try {
@@ -460,7 +463,6 @@ export const recibirGuia = async (numGuia, office_id) => {
       };
     }
 
-    console.log(respuesta);
     return respuesta;
   } catch (error) {
     console.log(`ERROR en GuiasAction: recibirGuia ${error}`);
