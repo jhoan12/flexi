@@ -9,7 +9,7 @@ const Notificaciones = () => {
   const {notificaciones} = useSelector((state) => state.notificaciones)
   useEffect(() => {
     notificaciones.length <= 0 && (dispatch(getAllNotificaciones()))
-  }, [dispatch,notificaciones]);
+  }, [dispatch]);
 
   return (
       <div className='container'>
