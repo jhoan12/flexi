@@ -19,7 +19,6 @@ export const loginUser = (user, navigate) => {
       const docSnap = await getDoc(doc(dbFirestore, `oficinas/${login.user.uid}`));
       const data = docSnap.data();
       localStorage.setItem("isLoged", true);
-      console.log("datos user", data);
       dispatch({
         type: types.loginUser,
         payload: {
