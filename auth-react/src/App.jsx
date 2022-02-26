@@ -19,6 +19,7 @@ import { dbAuth } from "./firebase";
 // import Devoluciones from "./components/Devoluciones/Devoluciones";
 import Notificaciones from "./components/Notificaciones/Notificaciones";
 import VisualizadorPdf from "./components/PDFs/visualizador";
+import ReactTopPdf from "./components/PDFs/ReactTopPdf";
 
 function App() {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/visorPdfs" element={<VisualizadorPdf />} />
+        <Route path="/elVisor" element={<ReactTopPdf/>}/>
         {/* <Route
           path="/"
           exact

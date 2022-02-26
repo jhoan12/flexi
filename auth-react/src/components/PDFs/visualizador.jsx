@@ -4,6 +4,7 @@ import { Nav } from "react-bootstrap";
 import Rotulo from "./rotulos";
 import { useState } from "react";
 
+
 const VisualizadorPdf = () => {
     const [visor, setVisor] = useState("");
 
@@ -29,6 +30,8 @@ const VisualizadorPdf = () => {
                 }
             </div>
 
+
+        
 
         </div>
     )
